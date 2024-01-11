@@ -4,7 +4,7 @@
 # TODO: Update `runs-on` for arm64 when GitHub finally supports
 # native arm environments as QEMU takes around 1 hour to build
 # ref: https://github.com/actions/runner-images/issues/5631 :(
-name: Publish AnythingLLM Primary Docker image (amd64/arm64)
+name: Publish AnythingLLM Forked Docker image (amd64/arm64)
 
 concurrency:
   group: build-${{ github.ref }}
@@ -23,7 +23,7 @@ on:
 
 jobs:
   push_multi_platform_to_registries:
-    name: Push Docker multi-platform image to multiple registries
+    name: Push Docker multi-platform image to ghcr.io
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -43,12 +43,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       
-      - name: Log in to Docker Hub
-        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
@@ -61,7 +55,6 @@ jobs:
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: |
-            mintplexlabs/anythingllm
             ghcr.io/${{ github.repository }}
       
       - name: Build and push multi-platform Docker image
@@ -73,6 +66,5 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: |
             ${{ steps.meta.outputs.tags }}
-            ${{ github.ref_name == 'master' && 'mintplexlabs/anythingllm:latest' || '' }}
             ${{ github.ref_name == 'master' && format('ghcr.io/{0}:{1}', steps.lowercase_repo.outputs.repo, 'latest') || '' }}
           labels: ${{ steps.meta.outputs.labels }}
