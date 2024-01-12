@@ -67,7 +67,7 @@ async function asAudio({ fullFilePath = "", filename = "" }) {
   console.log(
     `[SUCCESS]: ${filename} transcribed, converted & ready for embedding.\n`
   );
-  return { success: true, reason: null, document: data };
+  return { success: true, reason: null, document: responseData };
 }
 
 async function convertToWavAudioData(sourcePath) {

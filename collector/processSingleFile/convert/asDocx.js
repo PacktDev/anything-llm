@@ -47,7 +47,7 @@ async function asDocX({ fullFilePath = "", filename = "" }) {
 
   trashFile(fullFilePath);
   console.log(`[SUCCESS]: ${filename} converted & ready for embedding.\n`);
-  return { success: true, reason: null, document: data };
+  return { success: true, reason: null, document: responseData };
 }
 
 module.exports = asDocX;
