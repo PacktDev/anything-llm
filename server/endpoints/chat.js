@@ -24,8 +24,8 @@ function chatEndpoints(app) {
         const { message, mode = "query" } = reqBody(request);
 
         const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { slug })
-          : await Workspace.get({ slug });
+          ? await Workspace.getWithUser(user, {slug :slug})
+          : await Workspace.get({slug :slug});
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -106,8 +106,8 @@ function chatEndpoints(app) {
         const { message, mode = "query" } = reqBody(request);
 
         const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { slug })
-          : await Workspace.get({ slug });
+          ? await Workspace.getWithUser(user, {slug :slug})
+          : await Workspace.get({slug :slug});
 
         if (!workspace) {
           response.sendStatus(400).end();

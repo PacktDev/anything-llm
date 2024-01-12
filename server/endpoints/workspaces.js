@@ -57,8 +57,8 @@ function workspaceEndpoints(app) {
         const { slug = null } = request.params;
         const data = reqBody(request);
         const currWorkspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { slug })
-          : await Workspace.get({ slug });
+          ? await Workspace.getWithUser(user, {slug :slug})
+          : await Workspace.get({slug :slug});
 
         if (!currWorkspace) {
           response.sendStatus(400).end();
@@ -150,8 +150,8 @@ function workspaceEndpoints(app) {
         const { slug = null } = request.params;
         const { adds = [], deletes = [] } = reqBody(request);
         const currWorkspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { slug })
-          : await Workspace.get({ slug });
+          ? await Workspace.getWithUser(user, { slug: slug })
+          : await Workspace.get({ slug: slug });
 
         if (!currWorkspace) {
           response.sendStatus(400).end();
@@ -187,8 +187,8 @@ function workspaceEndpoints(app) {
         const user = await userFromSession(request, response);
         const VectorDb = getVectorDbClass();
         const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { slug })
-          : await Workspace.get({ slug });
+          ? await Workspace.getWithUser(user, { slug: slug })
+          : await Workspace.get({ slug: slug });
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -232,8 +232,8 @@ function workspaceEndpoints(app) {
       const { slug } = request.params;
       const user = await userFromSession(request, response);
       const workspace = multiUserMode(response)
-        ? await Workspace.getWithUser(user, { slug })
-        : await Workspace.get({ slug });
+        ? await Workspace.getWithUser(user, { slug: slug })
+        : await Workspace.get({ slug: slug });
 
       response.status(200).json({ workspace });
     } catch (e) {
@@ -250,8 +250,8 @@ function workspaceEndpoints(app) {
         const { slug } = request.params;
         const user = await userFromSession(request, response);
         const workspace = multiUserMode(response)
-          ? await Workspace.getWithUser(user, { slug })
-          : await Workspace.get({ slug });
+          ? await Workspace.getWithUser(user, { slug: slug })
+          : await Workspace.get({ slug: slug });
 
         if (!workspace) {
           response.sendStatus(400).end();

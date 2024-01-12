@@ -158,7 +158,7 @@ function apiWorkspaceEndpoints(app) {
     */
     try {
       const { slug } = request.params;
-      const workspace = await Workspace.get({ slug });
+      const workspace = await Workspace.get({slug :slug});
       response.status(200).json({ workspace });
     } catch (e) {
       console.log(e.message, e);
@@ -189,7 +189,7 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug = "" } = request.params;
         const VectorDb = getVectorDbClass();
-        const workspace = await Workspace.get({ slug });
+        const workspace = await Workspace.get({slug :slug});
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -274,7 +274,7 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug = null } = request.params;
         const data = reqBody(request);
-        const currWorkspace = await Workspace.get({ slug });
+        const currWorkspace = await Workspace.get({slug :slug});
 
         if (!currWorkspace) {
           response.sendStatus(400).end();
@@ -338,7 +338,7 @@ function apiWorkspaceEndpoints(app) {
     */
       try {
         const { slug } = request.params;
-        const workspace = await Workspace.get({ slug });
+        const workspace = await Workspace.get({slug :slug});
 
         if (!workspace) {
           response.sendStatus(400).end();
@@ -413,8 +413,7 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug = null } = request.params;
         const { adds = [], deletes = [] } = reqBody(request);
-        const currWorkspace = await Workspace.get({ slug });
-
+        const currWorkspace = await Workspace.get({slug :slug});
         if (!currWorkspace) {
           response.sendStatus(400).end();
           return;
@@ -423,7 +422,7 @@ function apiWorkspaceEndpoints(app) {
         await Document.removeDocuments(currWorkspace, deletes);
         await Document.addDocuments(currWorkspace, adds);
         const updatedWorkspace = await Workspace.get(
-          `id = ${Number(currWorkspace.id)}`
+          {id : Number(currWorkspace.id)}
         );
         response.status(200).json({ workspace: updatedWorkspace });
       } catch (e) {
@@ -479,7 +478,7 @@ function apiWorkspaceEndpoints(app) {
       try {
         const { slug } = request.params;
         const { message, mode = "query" } = reqBody(request);
-        const workspace = await Workspace.get({ slug });
+        const workspace = await Workspace.get({slug :slug});
 
         if (!workspace) {
           response.sendStatus(400).end();
