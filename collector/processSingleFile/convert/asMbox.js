@@ -61,7 +61,7 @@ async function asMbox({ fullFilePath = "", filename = "" }) {
   console.log(
     `[SUCCESS]: ${filename} messages converted & ready for embedding.\n`
   );
-  return { success: true, reason: null, document: data };
+  return { success: true, reason: null, document: responseData };
 }
 
 module.exports = asMbox;
