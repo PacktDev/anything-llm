@@ -38,8 +38,7 @@ async function asOfficeMime({ fullFilePath = "", filename = "" }) {
   };
 
   const { pageContent, token_count_estimate, ...responseData } = data;
-
-  writeToServerDocuments(data, `${slugify(filename)}-${data.id}`);
+  responseData.destinationFilePath = writeToServerDocuments(data, `${slugify(filename)}-${data.id}`);
   trashFile(fullFilePath);
   console.log(`[SUCCESS]: ${filename} converted & ready for embedding.\n`);
   return { success: true, reason: null, document: data };

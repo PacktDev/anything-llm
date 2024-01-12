@@ -38,8 +38,9 @@ async function asTxt({ fullFilePath = "", filename = "" }) {
   };
 
   const { pageContent, token_count_estimate, ...responseData } = data;
+  responseData.destinationFilePath = writeToServerDocuments(data, `${slugify(filename)}-${data.id}`);
 
-  writeToServerDocuments(data, `${slugify(filename)}-${data.id}`);
+
   trashFile(fullFilePath);
   console.log(`[SUCCESS]: ${filename} converted & ready for embedding.\n`);
 
