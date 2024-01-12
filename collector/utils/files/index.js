@@ -38,14 +38,14 @@ function writeToServerDocuments(
       );
   if (!fs.existsSync(destination))
     fs.mkdirSync(destination, { recursive: true });
-  const destinationFilePath = path.resolve(destination, filename);
+  const destinationFilePath = path.resolve(destination, filename) + ".json";
 
   fs.writeFileSync(
-    destinationFilePath + ".json",
+    destinationFilePath,
     JSON.stringify(data, null, 4),
     { encoding: "utf-8" }
   );
-  return;
+  return destinationFilePath;
 }
 
 // When required we can wipe the entire collector hotdir and tmp storage in case

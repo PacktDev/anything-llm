@@ -54,9 +54,10 @@ function apiDocumentEndpoints(app) {
                   "docAuthor": "Unknown",
                   "description": "Unknown",
                   "docSource": "a text file uploaded by the user.",
-                  "chunkSource": "Bfile.txt",
+                  "chunkSource": "file.txt",
                   "published": "11/01/2024, 16:25:09",
-                  "wordCount": 17653
+                  "wordCount": 17653,
+                  "destinationFilePath":  "/home/user/Workspace/anything-llm/server/storage/documents/custom-documents/file.txt-c5373104-67db-42d2-b03a-5e989b9a8a15.json"
               }
             }
           }
