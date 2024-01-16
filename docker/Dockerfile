@@ -135,6 +135,9 @@ COPY --chown=anythingllm:anythingllm ./collector/ ./collector/
 # Install collector dependencies
 RUN cd /app/collector && yarn install --production --network-timeout 100000 && yarn cache clean
 
+ENV DATABASE_PROVIDER=sqlite
+ENV DATABASE_URL=file:../storage/anythingllm.db
+
 # Migrate and Run Prisma against known schema
 RUN cd ./server && npx prisma generate --schema=./prisma/schema.prisma
 RUN cd ./server && npx prisma migrate deploy --schema=./prisma/schema.prisma
