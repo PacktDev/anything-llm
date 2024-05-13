@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'false',
   content: {
     relative: true,
     files: [
@@ -9,7 +10,8 @@ export default {
       "./src/pages/**/*.{js,jsx}",
       "./src/utils/**/*.js",
       "./src/*.jsx",
-      "./index.html"
+      "./index.html",
+      './node_modules/@tremor/**/*.{js,ts,jsx,tsx}'
     ]
   },
   theme: {
@@ -24,7 +26,8 @@ export default {
         "sidebar-button": "#31353A",
         sidebar: "#25272C",
         "historical-msg-system": "rgba(255, 255, 255, 0.05);",
-        "historical-msg-user": "#2C2F35"
+        "historical-msg-user": "#2C2F35",
+        outline: "#4E5153"
       },
       backgroundImage: {
         "preference-gradient":
@@ -36,6 +39,7 @@ export default {
         "main-gradient": "linear-gradient(180deg, #3D4147 0%, #2C2F35 100%)",
         "modal-gradient": "linear-gradient(180deg, #3D4147 0%, #2C2F35 100%)",
         "sidebar-gradient": "linear-gradient(90deg, #5B616A 0%, #3F434B 100%)",
+        "login-gradient": "linear-gradient(180deg, #3D4147 0%, #2C2F35 100%)",
         "menu-item-gradient":
           "linear-gradient(90deg, #3D4147 0%, #2C2F35 100%)",
         "menu-item-selected-gradient":
@@ -84,5 +88,35 @@ export default {
       }
     }
   },
+  // Required for rechart styles to show since they can be rendered dynamically and will be tree-shaken if not safe-listed.
+  safelist: [
+    {
+      pattern:
+        /^(bg-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
+      variants: ['hover', 'ui-selected'],
+    },
+    {
+      pattern:
+        /^(text-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
+      variants: ['hover', 'ui-selected'],
+    },
+    {
+      pattern:
+        /^(border-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
+      variants: ['hover', 'ui-selected'],
+    },
+    {
+      pattern:
+        /^(ring-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
+    },
+    {
+      pattern:
+        /^(stroke-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
+    },
+    {
+      pattern:
+        /^(fill-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
+    },
+  ],
   plugins: []
 }

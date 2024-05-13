@@ -1,16 +1,20 @@
 import { ArrowLeft, ArrowRight } from "@phosphor-icons/react";
-import { lazy, useState } from "react";
+import { useState } from "react";
 import { isMobile } from "react-device-detect";
+import Home from "./Home";
+import LLMPreference from "./LLMPreference";
+import UserSetup from "./UserSetup";
+import DataHandling from "./DataHandling";
+import Survey from "./Survey";
+import CreateWorkspace from "./CreateWorkspace";
+
 const OnboardingSteps = {
-  home: lazy(() => import("./Home")),
-  "llm-preference": lazy(() => import("./LLMPreference")),
-  "embedding-preference": lazy(() => import("./EmbeddingPreference")),
-  "vector-database": lazy(() => import("./VectorDatabaseConnection")),
-  "custom-logo": lazy(() => import("./CustomLogo")),
-  "user-setup": lazy(() => import("./UserSetup")),
-  "data-handling": lazy(() => import("./DataHandling")),
-  survey: lazy(() => import("./Survey")),
-  "create-workspace": lazy(() => import("./CreateWorkspace")),
+  home: Home,
+  "llm-preference": LLMPreference,
+  "user-setup": UserSetup,
+  "data-handling": DataHandling,
+  survey: Survey,
+  "create-workspace": CreateWorkspace,
 };
 
 export default OnboardingSteps;
@@ -90,6 +94,7 @@ export function OnboardingLayout({ children }) {
             disabled={backBtn.disabled}
             onClick={backBtn.onClick}
             className="group p-2 rounded-lg border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:not-allowed hover:bg-zinc-100 disabled:hover:bg-transparent"
+            aria-label="Back"
           >
             <ArrowLeft
               className="text-white group-hover:text-black group-disabled:text-gray-500"
@@ -117,6 +122,7 @@ export function OnboardingLayout({ children }) {
             disabled={forwardBtn.disabled}
             onClick={forwardBtn.onClick}
             className="group p-2 rounded-lg border-2 border-zinc-300 disabled:border-zinc-600 h-fit w-fit disabled:not-allowed hover:bg-zinc-100 disabled:hover:bg-transparent"
+            aria-label="Continue"
           >
             <ArrowRight
               className="text-white group-hover:text-black group-disabled:text-gray-500"

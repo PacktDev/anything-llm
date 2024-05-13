@@ -2,20 +2,16 @@ const { toChunks, maximumChunkLength } = require("../../helpers");
 
 class LocalAiEmbedder {
   constructor() {
-    const { Configuration, OpenAIApi } = require("openai");
     if (!process.env.EMBEDDING_BASE_PATH)
       throw new Error("No embedding base path was set.");
     if (!process.env.EMBEDDING_MODEL_PREF)
       throw new Error("No embedding model was set.");
-    const config = new Configuration({
-      basePath: process.env.EMBEDDING_BASE_PATH,
-      ...(!!process.env.LOCAL_AI_API_KEY
-        ? {
-            apiKey: process.env.LOCAL_AI_API_KEY,
-          }
-        : {}),
+
+    const { OpenAI: OpenAIApi } = require("openai");
+    this.openai = new OpenAIApi({
+      baseURL: process.env.EMBEDDING_BASE_PATH,
+      apiKey: process.env.LOCAL_AI_API_KEY ?? null,
     });
-    this.openai = new OpenAIApi(config);
 
     // Limit of how many strings we can process in a single pass to stay with resource or network limits
     this.maxConcurrentChunks = 50;
@@ -23,7 +19,9 @@ class LocalAiEmbedder {
   }
 
   async embedTextInput(textInput) {
-    const result = await this.embedChunks(textInput);
+    const result = await this.embedChunks(
+      Array.isArray(textInput) ? textInput : [textInput]
+    );
     return result?.[0] || [];
   }
 
@@ -32,16 +30,21 @@ class LocalAiEmbedder {
     for (const chunk of toChunks(textChunks, this.maxConcurrentChunks)) {
       embeddingRequests.push(
         new Promise((resolve) => {
-          this.openai
-            .createEmbedding({
+          this.openai.embeddings
+            .create({
               model: process.env.EMBEDDING_MODEL_PREF,
               input: chunk,
             })
-            .then((res) => {
-              resolve({ data: res.data?.data, error: null });
+            .then((result) => {
+              resolve({ data: result?.data, error: null });
             })
             .catch((e) => {
-              resolve({ data: [], error: e?.error });
+              e.type =
+                e?.response?.data?.error?.code ||
+                e?.response?.status ||
+                "failed_to_embed";
+              e.message = e?.response?.data?.error?.message || e.message;
+              resolve({ data: [], error: e });
             });
         })
       );
@@ -57,11 +60,14 @@ class LocalAiEmbedder {
         .map((res) => res.error)
         .flat();
       if (errors.length > 0) {
+        let uniqueErrors = new Set();
+        errors.map((error) =>
+          uniqueErrors.add(`[${error.type}]: ${error.message}`)
+        );
+
         return {
           data: [],
-          error: `(${errors.length}) Embedding Errors! ${errors
-            .map((error) => `[${error.type}]: ${error.message}`)
-            .join(", ")}`,
+          error: Array.from(uniqueErrors).join(", "),
         };
       }
       return {

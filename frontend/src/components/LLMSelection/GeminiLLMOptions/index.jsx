@@ -9,7 +9,7 @@ export default function GeminiLLMOptions({ settings }) {
           <input
             type="password"
             name="GeminiLLMApiKey"
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="Google Gemini API Key"
             defaultValue={settings?.GeminiLLMApiKey ? "*".repeat(20) : ""}
             required={true}
@@ -18,25 +18,27 @@ export default function GeminiLLMOptions({ settings }) {
           />
         </div>
 
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
-            Chat Model Selection
-          </label>
-          <select
-            name="GeminiLLMModelPref"
-            defaultValue={settings?.GeminiLLMModelPref || "gemini-pro"}
-            required={true}
-            className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
-          >
-            {["gemini-pro"].map((model) => {
-              return (
-                <option key={model} value={model}>
-                  {model}
-                </option>
-              );
-            })}
-          </select>
-        </div>
+        {!settings?.credentialsOnly && (
+          <div className="flex flex-col w-60">
+            <label className="text-white text-sm font-semibold block mb-4">
+              Chat Model Selection
+            </label>
+            <select
+              name="GeminiLLMModelPref"
+              defaultValue={settings?.GeminiLLMModelPref || "gemini-pro"}
+              required={true}
+              className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+            >
+              {["gemini-pro", "gemini-1.5-pro-latest"].map((model) => {
+                return (
+                  <option key={model} value={model}>
+                    {model}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+        )}
       </div>
     </div>
   );

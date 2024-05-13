@@ -8,6 +8,8 @@ import PrivateRoute, {
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Login from "@/pages/Login";
+import OnboardingFlow from "@/pages/OnboardingFlow";
+
 import { PfpProvider } from "./PfpContext";
 import { LogoProvider } from "./LogoContext";
 
@@ -18,6 +20,7 @@ const AdminUsers = lazy(() => import("@/pages/Admin/Users"));
 const AdminInvites = lazy(() => import("@/pages/Admin/Invitations"));
 const AdminWorkspaces = lazy(() => import("@/pages/Admin/Workspaces"));
 const AdminSystem = lazy(() => import("@/pages/Admin/System"));
+const AdminLogs = lazy(() => import("@/pages/Admin/Logging"));
 const GeneralChats = lazy(() => import("@/pages/GeneralSettings/Chats"));
 const GeneralAppearance = lazy(
   () => import("@/pages/GeneralSettings/Appearance")
@@ -26,23 +29,27 @@ const GeneralApiKeys = lazy(() => import("@/pages/GeneralSettings/ApiKeys"));
 const GeneralLLMPreference = lazy(
   () => import("@/pages/GeneralSettings/LLMPreference")
 );
+const GeneralTranscriptionPreference = lazy(
+  () => import("@/pages/GeneralSettings/TranscriptionPreference")
+);
 const GeneralEmbeddingPreference = lazy(
   () => import("@/pages/GeneralSettings/EmbeddingPreference")
+);
+const EmbeddingTextSplitterPreference = lazy(
+  () => import("@/pages/GeneralSettings/EmbeddingTextSplitterPreference")
 );
 const GeneralVectorDatabase = lazy(
   () => import("@/pages/GeneralSettings/VectorDatabase")
 );
-const GeneralExportImport = lazy(
-  () => import("@/pages/GeneralSettings/ExportImport")
-);
 const GeneralSecurity = lazy(() => import("@/pages/GeneralSettings/Security"));
-const DataConnectors = lazy(
-  () => import("@/pages/GeneralSettings/DataConnectors")
+const WorkspaceSettings = lazy(() => import("@/pages/WorkspaceSettings"));
+const EmbedConfigSetup = lazy(
+  () => import("@/pages/GeneralSettings/EmbedConfigs")
 );
-const DataConnectorSetup = lazy(
-  () => import("@/pages/GeneralSettings/DataConnectors/Connectors")
+const EmbedChats = lazy(() => import("@/pages/GeneralSettings/EmbedChats"));
+const PrivacyAndData = lazy(
+  () => import("@/pages/GeneralSettings/PrivacyAndData")
 );
-const OnboardingFlow = lazy(() => import("@/pages/OnboardingFlow"));
 
 export default function App() {
   return (
@@ -54,7 +61,15 @@ export default function App() {
               <Route path="/" element={<PrivateRoute Component={Main} />} />
               <Route path="/login" element={<Login />} />
               <Route
+                path="/workspace/:slug/settings/:tab"
+                element={<ManagerRoute Component={WorkspaceSettings} />}
+              />
+              <Route
                 path="/workspace/:slug"
+                element={<PrivateRoute Component={WorkspaceChat} />}
+              />
+              <Route
+                path="/workspace/:slug/t/:threadSlug"
                 element={<PrivateRoute Component={WorkspaceChat} />}
               />
               <Route path="/accept-invite/:code" element={<InvitePage />} />
@@ -65,21 +80,45 @@ export default function App() {
                 element={<AdminRoute Component={GeneralLLMPreference} />}
               />
               <Route
+                path="/settings/transcription-preference"
+                element={
+                  <AdminRoute Component={GeneralTranscriptionPreference} />
+                }
+              />
+              <Route
                 path="/settings/embedding-preference"
                 element={<AdminRoute Component={GeneralEmbeddingPreference} />}
+              />
+              <Route
+                path="/settings/text-splitter-preference"
+                element={
+                  <AdminRoute Component={EmbeddingTextSplitterPreference} />
+                }
               />
               <Route
                 path="/settings/vector-database"
                 element={<AdminRoute Component={GeneralVectorDatabase} />}
               />
-              {/* Manager */}
               <Route
-                path="/settings/export-import"
-                element={<ManagerRoute Component={GeneralExportImport} />}
+                path="/settings/event-logs"
+                element={<AdminRoute Component={AdminLogs} />}
               />
+              <Route
+                path="/settings/embed-config"
+                element={<AdminRoute Component={EmbedConfigSetup} />}
+              />
+              <Route
+                path="/settings/embed-chats"
+                element={<AdminRoute Component={EmbedChats} />}
+              />
+              {/* Manager */}
               <Route
                 path="/settings/security"
                 element={<ManagerRoute Component={GeneralSecurity} />}
+              />
+              <Route
+                path="/settings/privacy"
+                element={<AdminRoute Component={PrivacyAndData} />}
               />
               <Route
                 path="/settings/appearance"
@@ -87,7 +126,7 @@ export default function App() {
               />
               <Route
                 path="/settings/api-keys"
-                element={<ManagerRoute Component={GeneralApiKeys} />}
+                element={<AdminRoute Component={GeneralApiKeys} />}
               />
               <Route
                 path="/settings/workspace-chats"
@@ -109,15 +148,6 @@ export default function App() {
                 path="/settings/workspaces"
                 element={<ManagerRoute Component={AdminWorkspaces} />}
               />
-              <Route
-                path="/settings/data-connectors"
-                element={<ManagerRoute Component={DataConnectors} />}
-              />
-              <Route
-                path="/settings/data-connectors/:connector"
-                element={<ManagerRoute Component={DataConnectorSetup} />}
-              />
-
               {/* Onboarding Flow */}
               <Route path="/onboarding" element={<OnboardingFlow />} />
               <Route path="/onboarding/:step" element={<OnboardingFlow />} />

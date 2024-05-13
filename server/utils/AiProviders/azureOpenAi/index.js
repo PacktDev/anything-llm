@@ -1,8 +1,11 @@
 const { AzureOpenAiEmbedder } = require("../../EmbeddingEngines/azureOpenAi");
-const { chatPrompt } = require("../../chats");
+const {
+  writeResponseChunk,
+  clientAbortedHandler,
+} = require("../../helpers/chat/responses");
 
 class AzureOpenAiLLM {
-  constructor(embedder = null) {
+  constructor(embedder = null, _modelPreference = null) {
     const { OpenAIClient, AzureKeyCredential } = require("@azure/openai");
     if (!process.env.AZURE_OPENAI_ENDPOINT)
       throw new Error("No Azure API endpoint was set.");
@@ -25,6 +28,7 @@ class AzureOpenAiLLM {
         "No embedding provider defined for AzureOpenAiLLM - falling back to AzureOpenAiEmbedder for embedding!"
       );
     this.embedder = !embedder ? new AzureOpenAiEmbedder() : embedder;
+    this.defaultTemp = 0.7;
   }
 
   #appendContext(contextTexts = []) {
@@ -40,7 +44,7 @@ class AzureOpenAiLLM {
   }
 
   streamingEnabled() {
-    return "streamChat" in this && "streamGetChatCompletion" in this;
+    return "streamGetChatCompletion" in this;
   }
 
   // Sure the user selected a proper value for the token limit
@@ -77,66 +81,6 @@ class AzureOpenAiLLM {
     return { safe: true, reasons: [] };
   }
 
-  async sendChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!this.model)
-      throw new Error(
-        "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
-      );
-
-    const messages = await this.compressMessages(
-      {
-        systemPrompt: chatPrompt(workspace),
-        userPrompt: prompt,
-        chatHistory,
-      },
-      rawHistory
-    );
-    const textResponse = await this.openai
-      .getChatCompletions(this.model, messages, {
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
-        n: 1,
-      })
-      .then((res) => {
-        if (!res.hasOwnProperty("choices"))
-          throw new Error("AzureOpenAI chat: No results!");
-        if (res.choices.length === 0)
-          throw new Error("AzureOpenAI chat: No results length!");
-        return res.choices[0].message.content;
-      })
-      .catch((error) => {
-        console.log(error);
-        throw new Error(
-          `AzureOpenAI::getChatCompletions failed with: ${error.message}`
-        );
-      });
-    return textResponse;
-  }
-
-  async streamChat(chatHistory = [], prompt, workspace = {}, rawHistory = []) {
-    if (!this.model)
-      throw new Error(
-        "No OPEN_MODEL_PREF ENV defined. This must the name of a deployment on your Azure account for an LLM chat model like GPT-3.5."
-      );
-
-    const messages = await this.compressMessages(
-      {
-        systemPrompt: chatPrompt(workspace),
-        userPrompt: prompt,
-        chatHistory,
-      },
-      rawHistory
-    );
-    const stream = await this.openai.streamChatCompletions(
-      this.model,
-      messages,
-      {
-        temperature: Number(workspace?.openAiTemp ?? 0.7),
-        n: 1,
-      }
-    );
-    return { type: "azureStream", stream };
-  }
-
   async getChatCompletion(messages = [], { temperature = 0.7 }) {
     if (!this.model)
       throw new Error(
@@ -164,7 +108,49 @@ class AzureOpenAiLLM {
         n: 1,
       }
     );
-    return { type: "azureStream", stream };
+    return stream;
+  }
+
+  handleStream(response, stream, responseProps) {
+    const { uuid = uuidv4(), sources = [] } = responseProps;
+
+    return new Promise(async (resolve) => {
+      let fullText = "";
+
+      // Establish listener to early-abort a streaming response
+      // in case things go sideways or the user does not like the response.
+      // We preserve the generated text but continue as if chat was completed
+      // to preserve previously generated content.
+      const handleAbort = () => clientAbortedHandler(resolve, fullText);
+      response.on("close", handleAbort);
+
+      for await (const event of stream) {
+        for (const choice of event.choices) {
+          const delta = choice.delta?.content;
+          if (!delta) continue;
+          fullText += delta;
+          writeResponseChunk(response, {
+            uuid,
+            sources: [],
+            type: "textResponseChunk",
+            textResponse: delta,
+            close: false,
+            error: false,
+          });
+        }
+      }
+
+      writeResponseChunk(response, {
+        uuid,
+        sources,
+        type: "textResponseChunk",
+        textResponse: "",
+        close: true,
+        error: false,
+      });
+      response.removeListener("close", handleAbort);
+      resolve(fullText);
+    });
   }
 
   // Simple wrapper for dynamic embedder & normalize interface for all LLM implementations

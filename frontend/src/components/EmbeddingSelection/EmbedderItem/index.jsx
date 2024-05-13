@@ -9,8 +9,8 @@ export default function EmbedderItem({
   return (
     <div
       onClick={() => onClick(value)}
-      className={`w-full hover:bg-white/10 p-2 rounded-md hover:cursor-pointer ${
-        checked && "bg-white/10"
+      className={`w-full p-2 rounded-md hover:cursor-pointer hover:bg-white/10 ${
+        checked ? "bg-white/10" : ""
       }`}
     >
       <input
@@ -27,11 +27,9 @@ export default function EmbedderItem({
           alt={`${name} logo`}
           className="w-10 h-10 rounded-md"
         />
-        <div className="flex flex-col gap-y-1">
-          <div className="text-sm font-semibold">{name}</div>
-          <div className="mt-2 text-xs text-white tracking-wide">
-            {description}
-          </div>
+        <div className="flex flex-col">
+          <div className="text-sm font-semibold text-white">{name}</div>
+          <div className="mt-1 text-xs text-[#D2D5DB]">{description}</div>
         </div>
       </div>
     </div>

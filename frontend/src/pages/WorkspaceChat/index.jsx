@@ -27,7 +27,17 @@ function ShowWorkspaceChat() {
     async function getWorkspace() {
       if (!slug) return;
       const _workspace = await Workspace.bySlug(slug);
-      setWorkspace(_workspace);
+      if (!_workspace) {
+        setLoading(false);
+        return;
+      }
+      const suggestedMessages = await Workspace.getSuggestedMessages(slug);
+      const pfpUrl = await Workspace.fetchPfp(slug);
+      setWorkspace({
+        ..._workspace,
+        suggestedMessages,
+        pfpUrl,
+      });
       setLoading(false);
     }
     getWorkspace();

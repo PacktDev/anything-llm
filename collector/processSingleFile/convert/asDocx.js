@@ -24,7 +24,11 @@ async function asDocX({ fullFilePath = "", filename = "" }) {
   if (!docxPageContent.length) {
     console.error(`Resulting text content was empty for ${filename}.`);
     trashFile(fullFilePath);
-    return { success: false, reason: `No text content found in ${filename}.` };
+    return {
+      success: false,
+      reason: `No text content found in ${filename}.`,
+      documents: [],
+    };
   }
 
   const content = docxPageContent.join("");
@@ -35,19 +39,20 @@ async function asDocX({ fullFilePath = "", filename = "" }) {
     docAuthor: "no author found",
     description: "No description found.",
     docSource: "pdf file uploaded by the user.",
-    chunkSource: filename,
+    chunkSource: "",
     published: createdDate(fullFilePath),
     wordCount: content.split(" ").length,
     pageContent: content,
     token_count_estimate: tokenizeString(content).length,
   };
 
-  const { pageContent, token_count_estimate, ...responseData } = data;
-  responseData.destinationFilePath = writeToServerDocuments(data, `${slugify(filename)}-${data.id}`);
-
+  const document = writeToServerDocuments(
+    data,
+    `${slugify(filename)}-${data.id}`
+  );
   trashFile(fullFilePath);
   console.log(`[SUCCESS]: ${filename} converted & ready for embedding.\n`);
-  return { success: true, reason: null, document: responseData };
+  return { success: true, reason: null, documents: [document] };
 }
 
 module.exports = asDocX;

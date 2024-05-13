@@ -22,10 +22,15 @@ async function asMbox({ fullFilePath = "", filename = "" }) {
   if (!mails.length) {
     console.error(`Resulting mail items was empty for ${filename}.`);
     trashFile(fullFilePath);
-    return { success: false, reason: `No mail items found in ${filename}.` };
+    return {
+      success: false,
+      reason: `No mail items found in ${filename}.`,
+      documents: [],
+    };
   }
 
   let item = 1;
+  const documents = [];
   for (const mail of mails) {
     if (!mail.hasOwnProperty("text")) continue;
 
@@ -44,7 +49,7 @@ async function asMbox({ fullFilePath = "", filename = "" }) {
       docAuthor: mail?.from?.text,
       description: "No description found.",
       docSource: "Mbox message file uploaded by the user.",
-      chunkSource: filename,
+      chunkSource: "",
       published: createdDate(fullFilePath),
       wordCount: content.split(" ").length,
       pageContent: content,
@@ -52,7 +57,11 @@ async function asMbox({ fullFilePath = "", filename = "" }) {
     };
 
     item++;
-    writeToServerDocuments(data, `${slugify(filename)}-${data.id}-msg-${item}`);
+    const document = writeToServerDocuments(
+      data,
+      `${slugify(filename)}-${data.id}-msg-${item}`
+    );
+    documents.push(document);
   }
 
   const { pageContent, token_count_estimate, ...responseData } = data;
@@ -61,7 +70,7 @@ async function asMbox({ fullFilePath = "", filename = "" }) {
   console.log(
     `[SUCCESS]: ${filename} messages converted & ready for embedding.\n`
   );
-  return { success: true, reason: null, document: responseData };
+  return { success: true, reason: null, documents };
 }
 
 module.exports = asMbox;

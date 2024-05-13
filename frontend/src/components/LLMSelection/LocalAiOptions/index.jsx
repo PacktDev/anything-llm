@@ -21,7 +21,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
             </p>
           </div>
           <a
-            href={paths.settings.embeddingPreference()}
+            href={paths.settings.embedder.modelPreference()}
             className="text-sm md:text-base my-2 underline"
           >
             Manage embedding &rarr;
@@ -36,7 +36,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
           <input
             type="url"
             name="LocalAiBasePath"
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="http://localhost:1234/v1"
             defaultValue={settings?.LocalAiBasePath}
             required={true}
@@ -46,27 +46,31 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
             onBlur={() => setBasePath(basePathValue)}
           />
         </div>
-        <LocalAIModelSelection
-          settings={settings}
-          basePath={basePath}
-          apiKey={apiKey}
-        />
-        <div className="flex flex-col w-60">
-          <label className="text-white text-sm font-semibold block mb-4">
-            Token context window
-          </label>
-          <input
-            type="number"
-            name="LocalAiTokenLimit"
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
-            placeholder="4096"
-            min={1}
-            onScroll={(e) => e.target.blur()}
-            defaultValue={settings?.LocalAiTokenLimit}
-            required={true}
-            autoComplete="off"
-          />
-        </div>
+        {!settings?.credentialsOnly && (
+          <>
+            <LocalAIModelSelection
+              settings={settings}
+              basePath={basePath}
+              apiKey={apiKey}
+            />
+            <div className="flex flex-col w-60">
+              <label className="text-white text-sm font-semibold block mb-4">
+                Token context window
+              </label>
+              <input
+                type="number"
+                name="LocalAiTokenLimit"
+                className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
+                placeholder="4096"
+                min={1}
+                onScroll={(e) => e.target.blur()}
+                defaultValue={settings?.LocalAiTokenLimit}
+                required={true}
+                autoComplete="off"
+              />
+            </div>
+          </>
+        )}
       </div>
       <div className="w-full flex items-center gap-4">
         <div className="flex flex-col w-60">
@@ -80,7 +84,7 @@ export default function LocalAiOptions({ settings, showAlert = false }) {
           <input
             type="password"
             name="LocalAiApiKey"
-            className="bg-zinc-900 text-white placeholder-white placeholder-opacity-60 text-sm rounded-lg focus:border-white block w-full p-2.5"
+            className="bg-zinc-900 text-white placeholder:text-white/20 text-sm rounded-lg focus:border-white block w-full p-2.5"
             placeholder="sk-mysecretkey"
             defaultValue={settings?.LocalAiApiKey ? "*".repeat(20) : ""}
             autoComplete="off"
@@ -126,7 +130,7 @@ function LocalAIModelSelection({ settings, basePath = null, apiKey = null }) {
         <select
           name="LocalAiModelPref"
           disabled={true}
-          className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+          className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
         >
           <option disabled={true} selected={true}>
             {basePath?.includes("/v1")
@@ -146,7 +150,7 @@ function LocalAIModelSelection({ settings, basePath = null, apiKey = null }) {
       <select
         name="LocalAiModelPref"
         required={true}
-        className="bg-zinc-900 border border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
+        className="bg-zinc-900 border-gray-500 text-white text-sm rounded-lg block w-full p-2.5"
       >
         {customModels.length > 0 && (
           <optgroup label="Your loaded models">

@@ -5,11 +5,8 @@ labels: [possible bug]
 body:
   - type: markdown
     attributes:
-      value: |
-      Use this template to file a bug report for AnythingLLM. Please be as descriptive as possible to allow everyone to replicate and solve your issue.
-
-      Want help contributing a PR? Use our repo chatbot by OnboardAI! https://app.getonboardai.com/chat/github/mintplex-labs/anything-llm
-  
+      value: | 
+        Use this template to file a bug report for AnythingLLM. Please be as descriptive as possible to allow everyone to replicate and solve your issue. Want help contributing a PR? Use our repo chatbot by OnboardAI! https://learnthisrepo.com/anythingllm"
   - type: dropdown
     id: runtime
     attributes:
@@ -20,6 +17,7 @@ body:
         - Docker (remote machine)
         - Local development
         - AnythingLLM desktop app
+        - All versions
         - Not listed
       default: 0
     validations:

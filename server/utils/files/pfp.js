@@ -2,6 +2,8 @@ const path = require("path");
 const fs = require("fs");
 const { getType } = require("mime");
 const { User } = require("../../models/user");
+const { normalizePath } = require(".");
+const { Workspace } = require("../../models/workspace");
 
 function fetchPfp(pfpPath) {
   if (!fs.existsSync(pfpPath)) {
@@ -32,8 +34,20 @@ async function determinePfpFilepath(id) {
   const basePath = process.env.STORAGE_DIR
     ? path.join(process.env.STORAGE_DIR, "assets/pfp")
     : path.join(__dirname, "../../storage/assets/pfp");
-  const pfpFilepath = path.join(basePath, pfpFilename);
+  const pfpFilepath = path.join(basePath, normalizePath(pfpFilename));
+  if (!fs.existsSync(pfpFilepath)) return null;
+  return pfpFilepath;
+}
 
+async function determineWorkspacePfpFilepath(slug) {
+  const workspace = await Workspace.get({ slug });
+  const pfpFilename = workspace?.pfpFilename || null;
+  if (!pfpFilename) return null;
+
+  const basePath = process.env.STORAGE_DIR
+    ? path.join(process.env.STORAGE_DIR, "assets/pfp")
+    : path.join(__dirname, "../../storage/assets/pfp");
+  const pfpFilepath = path.join(basePath, normalizePath(pfpFilename));
   if (!fs.existsSync(pfpFilepath)) return null;
   return pfpFilepath;
 }
@@ -41,4 +55,5 @@ async function determinePfpFilepath(id) {
 module.exports = {
   fetchPfp,
   determinePfpFilepath,
+  determineWorkspacePfpFilepath,
 };
